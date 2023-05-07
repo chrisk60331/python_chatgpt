@@ -63,12 +63,15 @@ class ChatThread(threading.Thread):
 
     def parse_response(self, response) -> str:
         parsed = {}
-        for choice in response.choices:
-            logprobs = choice.get("logprobs").get("top_logprobs")
-            for logprob in logprobs:
-                parsed["".join(logprob.keys())] = sum(logprob.values())
-        return sorted(parsed, key=lambda x: parsed[x])[0]
+        if hasattr(response, "choices"):
+            for choice in response.choices:
+                logprobs = choice.get("logprobs").get("top_logprobs")
+                for logprob in logprobs:
+                    parsed["".join(logprob.keys())] = sum(logprob.values())
 
+            return sorted(parsed, key=lambda x: parsed[x])[0]
+        else:
+            return response
     def run(self) -> None:
         engines =  ['davinci', 'curie', 'babbage', 'ada', 'curie-instruct-beta']
         while True:
