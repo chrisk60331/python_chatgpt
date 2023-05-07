@@ -12,10 +12,9 @@ nlp = spacy.load("en_core_web_sm")
 API_KEY = os.environ.get("OPEN_AI_API_KEY")
 
 class ChatThread(threading.Thread):
-    def __init__(self, api_key: str, engine: str="davinci", max_tokens: int = 50, temperature: float = 0.5):
+    def __init__(self, api_key: str, max_tokens: int = 50, temperature: float = 0.1):
         super().__init__(daemon=True)
         self.msg_queue = queue.Queue()
-        self.engine = engine
         self.max_tokens = max_tokens
         self.temperature = temperature
         openai.api_key = api_key
@@ -24,7 +23,6 @@ class ChatThread(threading.Thread):
 
     def get_response(self, engine: str, message: str) -> str:
         try:
-            print(f"prompt: {prompt}")
             response = self.api_client.Completion.create(
                 engine=engine,
                 prompt=message,
@@ -51,7 +49,6 @@ class ChatThread(threading.Thread):
         for history_message in self.history:
             if " ".join(relevant_keywords) in history_message:
                 relevant_history.append(history_message)
-        print(f"Relevant history: {relevant_history}")
         return relevant_history
 
     def get_relevant_keywords(self, prompt: str) -> List[str]:
@@ -62,10 +59,9 @@ class ChatThread(threading.Thread):
                 relevant_keywords.append(token.text)
             elif token.ent_type_ != "" and not token.is_stop:
                 relevant_keywords.append(token.text)
-        print(f"Relevant key words: {relevant_keywords}")
         return relevant_keywords
 
-    def parse_response(self, response: str) -> str:
+    def parse_response(self, response) -> str:
         parsed = {}
         for choice in response.choices:
             logprobs = choice.get("logprobs").get("top_logprobs")
@@ -74,7 +70,7 @@ class ChatThread(threading.Thread):
         return sorted(parsed, key=lambda x: parsed[x])[0]
 
     def run(self) -> None:
-        engines =  ['davinci', 'curie', 'babbage', 'ada', 'curie-instruct-beta', 'davinci-codex']
+        engines =  ['davinci', 'curie', 'babbage', 'ada', 'curie-instruct-beta']
         while True:
             time.sleep(0.1)
             if not self.msg_queue.empty():
@@ -101,13 +97,6 @@ class ChatClient:
         while True:
             user_input = input("You: ")
             self.chat_thread.send_message(user_input)
-
-    def run(self) -> None:
-        while True:
-            message = input("You: ")
-            response = self.chat_thread.get_response(message)
-            print("ChatGPT:", response)
-
 
 if __name__ == "__main__":
     api_key = API_KEY
