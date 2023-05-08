@@ -2,7 +2,7 @@
 
 Python ChatGPT is a Python module that allows you to have threaded conversations with OpenAI's GPT-3 language model from the command line.
 
-You will need an API key from openAI. To get one, sign up yes, sign up at [open ai](https://platform.openai.com/account/api-keys) and spit out an api key.
+You will need an API key from openAI. To get one, sign up at [open ai](https://platform.openai.com/account/api-keys) and spit out an api key.
 
 ## Installation
 
