@@ -1,0 +1,25 @@
+repos:
+- repo: https://github.com/psf/black 
+  rev: "23.3.0"
+  hooks:
+  - id: black
+    language_version: python3.9
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: "b84480de6124681d551749528ab4b42c2269df8c"
+  hooks:
+  - id: mypy
+    args: [--ignore-missing-imports]
+- repo: https://github.com/gvanderest/pylama-pre-commit
+  rev: "0.1.2"
+  hooks:
+  - id: pylama
+- repo: local
+  hooks:
+  - id: pytest-cov
+    name: pytest-cov
+    stages: [push]
+    language: system
+    entry: pytest -v --cov=ethosu --cov-fail-under=0
+    types: [python]
+    pass_filenames: false
+    always_run: true

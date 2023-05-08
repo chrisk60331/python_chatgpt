@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from queue import Queue
 
 from src.main import ChatThread, ChatClient
@@ -20,7 +20,9 @@ class TestChatThread(unittest.TestCase):
     @patch("openai.Completion.create")
     def test_get_response(self, mock_completion):
         expected_response = "Hi there!"
-        mock_completion.return_value.choices[0].text.strip.return_value = expected_response
+        mock_completion.return_value.choices[
+            0
+        ].text.strip.return_value = expected_response
         response = self.chat_thread.get_response("Hello, ChatGPT!")
         self.assertEqual(response, expected_response)
 
@@ -29,7 +31,7 @@ class TestChatThread(unittest.TestCase):
     def test_run(self, mock_print, mock_get_response):
         self.chat_thread.msg_queue.put("Hello, ChatGPT!")
         self.chat_thread.run()
-        mock_print.assert_called_with(f"ChatGPT: Hi there!")
+        mock_print.assert_called_with("ChatGPT: Hi there!")
 
 
 class TestChatClient(unittest.TestCase):
