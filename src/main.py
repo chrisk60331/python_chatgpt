@@ -4,6 +4,7 @@ import queue
 import time
 from typing import Any, List
 
+import tkinter as tk
 import openai
 
 API_KEY = os.environ.get("OPENAI_API_KEY", "")
@@ -48,6 +49,24 @@ class ChatThread(threading.Thread):
         self.msg_queue.put(msg)
 
 
+class UserInput:
+    def __init__(self):
+        root = tk.Tk()
+        self.message_input = tk.Text(root, height=10, width=30)
+        self.message_input.pack()
+        send_button = tk.Button(root, text="Send", command=self.send_message)
+        send_button.pack(side="left", padx=(0, 10))
+        cancel_button = tk.Button(root, text="Cancel", command=self.cancel_message)
+        cancel_button.pack(side="right", padx=(10, 0))
+        root.mainloop()
+
+    def send_message(self):
+        return self.message_input.get("1.0", "end-1c")
+
+    def cancel_message(self):
+        self.message_input.delete("1.0", "end")
+
+
 class ChatClient:
     def __init__(self, api_key: str) -> None:
         self.chat_thread = ChatThread(api_key)
@@ -57,7 +76,7 @@ class ChatClient:
         print("Type '/history' to show the conversation history.")
         self.chat_thread.start()
         while True:
-            user_input = input("You: ")
+            user_input = UserInput()
             if user_input.lower() == "/exit":
                 break
             elif user_input.lower() == "/history":
