@@ -1,3 +1,4 @@
+import re
 from typing import List, Any
 
 import openai
@@ -37,4 +38,5 @@ class OpenAIChat:
         response = self.get_response(
             messages=[message],
         )
-        return "_".join([r.get("content").strip() for _, r in response])
+        name = "_".join([r.get("content").strip() for _, r in response])
+        return str().join(re.findall(r"^\S+_\S+\.\S+$", name)) or name
