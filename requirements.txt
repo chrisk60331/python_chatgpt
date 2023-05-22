@@ -86,3 +86,6 @@ websocket-client==1.5.1
 Werkzeug==2.3.3
 xmltodict==0.13.0
 yarl==1.9.2
+boto3
+pygame
+

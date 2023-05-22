@@ -7,7 +7,8 @@ import time
 
 from src.code_snippet import parse_code_snippets
 from src.rate_limiter import RateLimiter
-
+from src.text_to_speech import TextToSpeech
+from src.audio_play import AudioPlayer
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,13 +38,15 @@ class ChatThread(threading.Thread):
         for engine, response in responses:
             self.history.append(response)
             response_content = response.get("content")
+            print(f"ChatGPT [{engine}]: {response_content}")
+            TextToSpeech().create_audio_file(response_content, "foo.mp3")
+            AudioPlayer("foo.mp3").play()
             for snippet in parse_code_snippets(response_content):
                 if isinstance(snippet, tuple):
                     snippet = "".join(snippet)
                 with self.rate_limiter:
                     snippet.file_name = self.api_client.label_code(snippet)
                 snippet.save()
-            print(f"ChatGPT [{engine}]: {response_content}")
 
     def get_response(self, message):
         message = {"role": "user", "content": message}
